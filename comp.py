@@ -1,8 +1,18 @@
 import numpy as np
-liste = [[0]*7]*1000 #np.zeros((10, 1000))
+import argparse
+
+parser = argparse.ArgumentParser(description='Process some integers.')
+parser.add_argument('--yesterday', type=str, default='./a.csv',
+                    help='input csv file.')
+parser.add_argument('--today', type=str, default='./b.csv',
+                    help='output csv file.')
+
+args = parser.parse_args()
+
+# liste = [[0]*7]*1000 #np.zeros((10, 1000))
 liste_temp = np.zeros((1000, 7))
-f1 = open("b.csv", 'r') #today
-f2 = open("a.csv", 'r') #yesterday
+f1 = open(args.today, 'r') #today
+f2 = open(args.yesterday, 'r') #yesterday
 
 from csv import reader
 # open file in read mode
