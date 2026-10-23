@@ -1,0 +1,14 @@
+{"ticker": {
+ "BTCUSDT":   {"last": "100.0",       "low": "90.0",        "high": "110.0"},
+ "ETHUSDT":   {"last": "2500.5",      "low": "2400.25",     "high": "2650.75"},
+ "FLATUSDT":  {"last": "5.0",         "low": "5.0",         "high": "5.0"},
+ "ZEROUSDT":  {"last": "0.5",         "low": "0.0",         "high": "1.0"},
+ "TINYUSDT":  {"last": "0.00000123",  "low": "0.00000100",  "high": "0.00000150"},
+ "ALLZERO":   {"last": "0",           "low": "0",           "high": "0"},
+ "STALEUSDT": {"last": "120.0",       "low": "90.0",        "high": "110.0"},
+ "BELOWUSDT": {"last": "80.0",        "low": "90.0",        "high": "110.0"},
+ "EDGELOW":   {"last": "100.0",       "low": "100.0",       "high": "200.0"},
+ "EDGEHIGH":  {"last": "200.0",       "low": "100.0",       "high": "200.0"},
+ "E8USDT":    {"last": "0.00000001",  "low": "0.00000001",  "high": "0.00000002"},
+ "AAAUSDT":   {"last": "10.0",        "low": "9.5",         "high": "10.5"}
+}}

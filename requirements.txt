@@ -1,0 +1,2 @@
+numpy>=1.26
+# coinex client: provider unresolved (PyPI "coinex" 0.1.0 has no coinex.coinex module) - see README/HANDOFF. Do not pin a guess.
