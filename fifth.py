@@ -1,51 +1,40 @@
-import numpy as np
-from csv import reader
 import argparse
+import os
+import sys
+from csv import reader
 
-parser = argparse.ArgumentParser(description='Process some integers.')
-parser.add_argument('--input', type=str, default='./half.csv',
-                    help='input csv file.')
-parser.add_argument('--output', type=str, default='./fifi.csv',
-                    help='output csv file.')
-parser.add_argument('--coef', type=int , metavar='N', default=5,
-                    help='Margin')
+from margins import HEADER, format_row, margin_row, non_negative_int, write_lines
 
-args = parser.parse_args()
-f = open(args.input, 'r') #today
-f1 = open(args.input, 'r') #today
-f2 = open(args.output, 'w') #yesterday
-f2.write('name,last,low,high,buy,sell,profit,tempbuy,tempsell,myprofit,Ratio\n')
-csv_reader_a = reader(f1)
 
-lene=len(f.readlines())
-liste_temp = np.zeros((lene, 7))
-# open file in read mode
+def build_parser():
+    p = argparse.ArgumentParser(description="Recompute the margin CSV from an existing main.py output CSV "
+                                            "(columns name,last,low,high,...; only the first four are read).")
+    p.add_argument('--input', metavar='PATH', default='./half.csv',
+                   help='input CSV, e.g. the output of main.py (default: %(default)s)')
+    p.add_argument('--output', metavar='PATH', default='./fifi.csv',
+                   help='output CSV, must differ from --input (default: %(default)s)')
+    p.add_argument('--coef', type=non_negative_int, metavar='N', default=5,
+                   help="1/N of the day's range, N>=0 (default: %(default)s)")
+    return p
 
-    # pass the file object to reader() to get the reader object
-csv_reader_a = reader(f1)
 
-# Iterate over each row in the csv using reader object
-i=0
-for row in csv_reader_a:
-    # row variable is a list that represents a row in csv
-    # print(row)
-    # if not row[0]:
-    #     break
-    liste_temp[i][0] =row[1]
-    liste_temp[i][1] =row[2]
-    liste_temp[i][2] =row[3]
-    # liste[1, i] = float(coins[name[i]]['low'])  # low
-    # liste[2, i] = float(coins[name[i]]['high'])  # high
-    # liste[0, i] = float(coins[name[i]]['last'])  # last
-    profit = (liste_temp[i][2] - liste_temp[i][1]) / liste_temp[i][1]  # Profit
-    tb = (1 - profit / args.coef) * liste_temp[i][0]  # Temp Buy
-    ts = (1 + profit / args.coef) * liste_temp[i][0]  # Temp Sell
-    buy = max(tb, liste_temp[i][1])  # Buy
-    sell = min(ts, liste_temp[i][2])  # Sell
-    mp = 100 * (sell - buy) / buy  # My Profit
-    rat = mp / profit  # Ratio
-    f2.write("%s,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f\n" % (
-    row[0], liste_temp[i][0], liste_temp[i][1], liste_temp[i][2], buy, sell, profit, tb, ts,
-    mp, rat))
-    i+=1
-f2.close()
+def main(argv=None):
+    args = build_parser().parse_args(argv)
+    if os.path.realpath(args.input) == os.path.realpath(args.output):
+        sys.exit("error: --input and --output must differ")
+    try:
+        with open(args.input, newline='') as f:
+            rows = [r for r in reader(f) if r and r[:4] != ["name", "last", "low", "high"]]
+    except FileNotFoundError:
+        sys.exit(f"error: {args.input} not found; run `python main.py` first or pass --input PATH")
+    # main.py writes %f (6 decimals), so recomputing from its CSV can differ for tiny prices
+    try:
+        lines = [HEADER + "\n"] + [
+            format_row(r[0], margin_row(float(r[1]), float(r[2]), float(r[3]), args.coef)) for r in rows]
+    except (IndexError, ValueError) as exc:
+        sys.exit(f"error: malformed input row ({type(exc).__name__}: {exc})")
+    write_lines(args.output, lines)
+
+
+if __name__ == "__main__":
+    main()

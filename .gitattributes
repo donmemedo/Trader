@@ -1,0 +1,2 @@
+# golden CSVs are compared byte-for-byte: never let autocrlf rewrite their line endings
+tests/fixtures/** -text
